@@ -55,14 +55,15 @@ void execute_login()
 
     //
     login_screen_print(blank, blank, 1, 0);
-    /*printf("> ");
-    gets(login_temp);*/
     ask_command(login_temp);
     login_screen_print(login_temp, blank, 0, 1);
-    /*printf("> ");
-    gets(senha_temp);*/
     ask_command(senha_temp);
     login_screen_print(login_temp, senha_temp, 0, 0);
+}
+
+void execute_register()
+{
+    printf("register");
 }
 //
 
@@ -76,6 +77,10 @@ int main()
 
     if(strcmp(home_command, "login") == 0){
         execute_login();
+    }
+    else if(strcmp(home_command, "register") == 0)
+    {
+        execute_register();
     }
     //login
     //
