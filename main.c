@@ -39,19 +39,12 @@ void login_screen_print(char login_temp_inlogin[], char senha_temp_inlogin[], in
 
 }
 
-char ask_command()
+char ask_command(char out_command[])
 {
     char input[50];
     printf(">");
     gets(input);
-
-    if(strcmp(input, "back") == 0){
-        //go back one screen
-    }
-    else{
-        return input;
-    }
-
+    strcpy(out_command, input);
 }
 
 void execute_login()
@@ -62,12 +55,13 @@ void execute_login()
 
     //
     login_screen_print(blank, blank, 1, 0);
-    printf("> ");
-
-    gets(login_temp);
+    /*printf("> ");
+    gets(login_temp);*/
+    ask_command(login_temp);
     login_screen_print(login_temp, blank, 0, 1);
-    printf("> ");
-    gets(senha_temp);
+    /*printf("> ");
+    gets(senha_temp);*/
+    ask_command(senha_temp);
     login_screen_print(login_temp, senha_temp, 0, 0);
 }
 //
@@ -77,8 +71,12 @@ void execute_login()
 
 int main()
 {
-    execute_login();
+    char home_command[50];
+    ask_command(home_command);
 
+    if(strcmp(home_command, "login") == 0){
+        execute_login();
+    }
     //login
     //
 
