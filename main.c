@@ -64,6 +64,7 @@ int register_window(Account create[], int acc_number)
     strcpy(create[acc_number].answer, char_temp_info[5]);
 
     //se conta criada
+    create[acc_number].status = 1;
     return 1;
 }
 
