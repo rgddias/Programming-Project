@@ -14,7 +14,9 @@ typedef struct{
 
 //functions
 void nfgets(char put_array[], int max_size); //nfgets function
-int register_window(Account create[], int acc_number);//tela de registro. Funcao register_window retorna 1 se teve sucesso
+int register_window(Account create[], int acc_number);/*tela de registro. Funcao register_window retorna 1 se teve sucesso
+                                                       e 0 se operacao cancelada, usuario cancela registro digitando "cancel"
+                                                       */
 void line_start();
 void line_end();
 int check_at(char string[]);//retorna 1 se o @ esta presente e -1 se nao
@@ -41,6 +43,10 @@ int register_window(Account create[], int acc_number)
     do
     {
         nfgets(char_temp_info[0], 30);
+        //se usuario digitar cancel cancela criacao de conta
+        if(strcmp(char_temp_info[0], "cancel") == 0){
+            return 0;
+        }
         //se nao tiver @ manda digitar denovo "email invalido digite novamente"
         if( ( check_at(char_temp_info[0]) ) != 1){
             printf("email invalido, digite novamente\n");
@@ -54,6 +60,11 @@ int register_window(Account create[], int acc_number)
     //
     printf("login: ");
     nfgets(char_temp_info[1], 30);
+    //
+    if(strcmp(char_temp_info[1], "cancel") == 0){
+        return 0;
+    }
+    //
     strcpy(create[acc_number].login, char_temp_info[1]);
 
     flag = 0;
@@ -61,8 +72,15 @@ int register_window(Account create[], int acc_number)
         printf("senha: ");
         nfgets(char_temp_info[2], 30);
         //
+        if(strcmp(char_temp_info[2], "cancel") == 0){
+            return 0;
+        }
+        //
         printf("confirme a senha: ");
         nfgets(char_temp_info[3], 30);
+        if(strcmp(char_temp_info[3], "cancel") == 0){
+            return 0;
+        }
         //se estiverem iguais
         if(strcmp(char_temp_info[2], char_temp_info[3]) == 0){
             strcpy(create[acc_number].password, char_temp_info[3]);
@@ -75,10 +93,18 @@ int register_window(Account create[], int acc_number)
 
     printf("pergunta de seguranca: ");
     nfgets(char_temp_info[4], 30);
+    //
+    if(strcmp(char_temp_info[4], "cancel") == 0){
+        return 0;
+    }
     strcpy(create[acc_number].question, char_temp_info[4]);
 
     printf("resposta de seguranca: ");
     nfgets(char_temp_info[5], 30);
+    //
+    if(strcmp(char_temp_info[5], "cancel") == 0){
+        return 0;
+    }
     strcpy(create[acc_number].answer, char_temp_info[5]);
 
     //se conta criada
