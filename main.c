@@ -1,47 +1,266 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <time.h>
+#include<string.h>
+#include<stdlib.h>
 
-//structs
+
+int num_contas = 0;
+
+// STRUCTS
+
 typedef struct{
-    char login[30];
+    char login[20];
     char email[30];
-    char password[30];
+    char password[20];
     char question[30];//pergunta esqueci senha
     char answer[30];//reposta
     int status; //1 se a conta pode logar e 0 se a conta nao pode logar
 }Account;
 
-//functions
-void nfgets(char put_array[], int max_size); //nfgets function
-int register_window(Account create[], int acc_number);/*tela de registro. Funcao register_window retorna 1 se teve sucesso
-                                                       e 0 se operacao cancelada, usuario cancela registro digitando "cancel"
-                                                       */
+// PROTOTIPOS
+
+void main_menu(Account contas[]);//menu inicial (primeira tela)
+
+int login_window(Account contas[]);//tela de login retorna o indice da conta logada
+
 void line_start();
+
 void line_end();
-int check_at(char string[]);//retorna 1 se o @ esta presente e -1 se nao
-//
-int main()
+
+void nfgets(char put_array[], int max_size); //nfgets function
+
+void new_password(Account logged[],int index); // funcao para mudanca de senha (opcao - esqueci senha)
+
+int register_window(Account create[], int acc_number); // funcao para cadastro
+
+int check_at(char get_string[]); //verificacao de email valido
+
+//Main
+
+int main ()
 {
-    Account acc_database[10]; //lista de todas as contas registradas
-    int acc_count = 0; //numero de contas criadas
+
+ Account acc_database[10];
+
+//Variables
+
+  int option;
+  int acc_count = 0;
+
+  //Operation
+
+  do
+  {
     //
-    if(1)//se opcao registrar for selecionada
+    system("cls");
+    line_end();
+
+    printf("\n--Bem vindo ao aplicativo Spotify--");
+    printf("\n\n(1)-> Entrar");
+    printf("\n(2)-> Cadastrar\n");
+    line_end();
+    printf("\nDigite a opcao: ");
+    //
+    scanf("%d", &option);
+    char dump;
+    scanf("%c", &dump);
+    switch(option)
     {
-        if(register_window(acc_database, acc_count) == 1){//se conta criada com sucesso
+      case 1:{
+        login_window(acc_database);
+        break;
+      }
+
+      case 2:{
+       if(register_window(acc_database, acc_count) == 1){//se conta criada com sucesso
             acc_count++;
+            system("cls");
+            printf("Cadastro feito com sucesso.\nEncaminhando para a aba de login");
+            scanf("%c", &dump);
+
+            login_window(acc_database);
         }
+        else{
+          printf("\nO cadastro foi cancelado");
+        }
+        break;
+      }
+
+      default:{
+        printf("\n\n Digite um opcao valida");
+      }
     }
-    return 0;
+
+  }while ( option != 2 && option != 1);
+
 }
+
+
+
+//FUNCOES
+
+void line_start()
+{
+  int i;
+   printf("\n\n");
+  for ( i = 0; i < 45; i++)
+  printf("*");
+}
+
+void line_end()
+{
+  int i;
+  printf("\n");
+  for ( i = 0; i < 45; i++)
+  printf("=");
+}
+
+
+int login_window(Account acc_database[])
+{
+
+  //Variables
+  char char_temp_info[5][30];
+  int email_confirm = 0;
+  int password_confirm = 0;
+  int tryAgain;
+  int i;
+  char dump;
+
+  //Operation
+
+  do
+  {
+    system("cls");
+    line_end();
+    printf("\n\n--Login--");
+    printf("\n\nDigite o email: ");
+    //
+    nfgets(char_temp_info[0],30);
+
+
+    for (i = 0; i < 10; i++)
+    {
+      if( strcmp(acc_database[i].email, char_temp_info[0]) == 0) //comparando o email com os cadastrados
+      {
+        email_confirm = 1; // confirmacao de email compativel
+
+        do
+        {
+
+          printf("\nDigite a senha: ");
+          nfgets(char_temp_info[1],30);
+
+          if( strcmp(char_temp_info[1],acc_database[i].password) == 0)//comparando as senhas com os cadastrados
+          {
+            password_confirm = 1;  // confirmacao de senha compativel
+            printf("\n\n Login feito");
+            return i; //porque retorna i ?
+          }
+
+          else{
+            printf("\nSenha incorreta: (1-Tentar de novo / 2- Esqueci minha senha)");
+            scanf("%d", &tryAgain);
+            scanf("%c", &dump);
+            if (tryAgain == 2){
+                new_password(acc_database,i);
+            }
+          }
+        }while(password_confirm == 0);
+      }
+    }
+
+    if (email_confirm == 0 || num_contas == 0) //caso nao haja email compativel com o digitado //para que serve num_contas?
+    {
+      printf("\nEmail nao cadastrado. \n(1-Tente novamente / 2- Cadastre-se)");
+      scanf("%d", &tryAgain);
+      scanf("%c", &dump);
+      if (tryAgain == 2){
+        register_window(acc_database,i); // i?
+      }
+    }
+
+  }while(email_confirm == 0 || password_confirm == 0);
+}
+
+void nfgets(char put_array[], int max_size)
+ {
+     fgets(put_array, max_size, stdin);
+     size_t length = strlen(put_array);
+     if (put_array[length - 1] == '\n'){
+         put_array[length - 1] = '\0';
+     }
+ }
+
+void new_password(Account logged[],int index)
+{
+
+  char char_temp_info[3][30];
+  int password_change = 0;
+  int answer_confirm = 0;
+  char dump;
+
+  system("cls");
+
+  line_start();
+  printf("\n\nPara sabermos que voce e realmente o dono dessa conta. Por favor responda a pergunta de confirmacao");
+
+  do
+  {
+    scanf("%c", &dump);
+    printf("\n->%s", logged[index].question); // Apresenta a pergunta de confirmacao
+    nfgets(char_temp_info[0],30);
+
+    if(strcmp(char_temp_info[0], logged[index].answer)== 0)// comparando a informacao dada com a resposta armazenada
+    {
+      answer_confirm = 1; // confirmacao de acerto da resposta
+
+      do {
+        printf("\n\n Digite sua nova senha: ");
+        nfgets(char_temp_info[1],30);
+
+        printf("\n\n Digite novamente: ");
+        nfgets(char_temp_info[2],30);
+
+        if (strcmp(char_temp_info[1], char_temp_info[2]) == 0) // comparando se as senhas sao iguais
+        {
+          strcpy(logged[index].password, char_temp_info[2]);
+
+          password_change = 1; // confirmacao de mudanca de senha
+
+          printf("A sua senha foi alterada com sucesso. Volte para o login");
+
+        }
+        else
+        {
+          printf("\nAs senhas nao sao iguais");
+        }
+      }while(password_change == 0);
+    }
+    else
+    {
+      printf("\nA resposta nao corresponde. Tente novamente");
+    }
+
+  }while(answer_confirm == 0);
+
+}
+
 
 int register_window(Account create[], int acc_number)
 {
     char char_temp_info[7][30];
     int flag = 0;
-    printf("email: ");
+    system("cls");
+
+    line_start();
+    printf("\n--Cadastro--\n\n");
+
     do
     {
+
+        printf("email: ");
+
         nfgets(char_temp_info[0], 30);
         //se usuario digitar cancel cancela criacao de conta
         if(strcmp(char_temp_info[0], "cancel") == 0){
@@ -128,29 +347,4 @@ int check_at(char get_string[])
     else{
         return -1;
     }
-}
-
-void nfgets(char put_array[], int max_size)
-{
-    fgets(put_array, max_size, stdin);
-    size_t length = strlen(put_array);
-    if (put_array[length - 1] == '\n'){
-        put_array[length - 1] = '\0';
-    }
-}
-
-void line_start()
-{
-  int i;
-   printf("\n\n");
-  for ( i = 0; i < 45; i++)
-  printf("*");
-}
-
-void line_end()
-{
-  int i;
-  printf("\n");
-  for ( i = 0; i < 45; i++)
-  printf("=");
 }
